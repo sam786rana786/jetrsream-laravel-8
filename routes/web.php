@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\MainUserController;
+use App\Http\Controllers\MainAdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,7 +14,7 @@ use App\Http\Controllers\AdminController;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/ 
+*/
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,10 +28,27 @@ Route::group(['prefix'=>'admin','middleware'=>['admin:admin']],function(){
 
 
 Route::middleware(['auth:sanctum,admin', 'verified'])->get('/admin/dashboard', function () {
-    return view('dashboard');
+    return view('admin.index');
 })->name('dashboard');
 
 
 Route::middleware(['auth:sanctum,web', 'verified'])->get('/dashboard', function () {
-    return view('dashboard');
+    return view('user.index');
 })->name('dashboard');
+
+// User All Routes
+Route::get('/user/logout', [MainUserController::class, 'Logout'])->name('user.logout');
+Route::get('/user/profile', [MainUserController::class, 'UserProfile'])->name('user.profile');
+Route::get('/user/profile/edit', [MainUserController::class, 'EditProfile'])->name('profile.edit');
+Route::post('/user/profile/store', [MainUserController::class, 'UpdateProfile'])->name('profile.store');
+Route::get('/user/password/view', [MainUserController::class, 'UserPassword'])->name('user.password.view');
+Route::post('/user/password/update', [MainUserController::class, 'PasswordUpdate'])->name('password.update');
+
+// Admin All Routes
+Route::get('/admin/logout', [AdminController::class, 'destroy'])->name('admin.logout');
+Route::get('/admin/profile', [MainAdminController::class, 'AdminProfile'])->name('admin.profile');
+Route::get('/admin/profile/edit', [MainAdminController::class, 'AdminProfileEdit'])->name('admin.profile.edit');
+Route::post('/admin/profile/store', [MainAdminController::class, 'AdminProfileStore'])->name('admin.profile.store');
+Route::get('/admin/password/view', [MainAdminController::class, 'AdminPassword'])->name('admin.password.view');
+Route::post('/user/password/update', [MainAdminController::class, 'AdminPasswordUpdate'])->name('admin.password.update');
+
